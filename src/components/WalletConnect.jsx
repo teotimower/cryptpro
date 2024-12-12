@@ -1,5 +1,5 @@
 import { Button, Text, useToast, VStack } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const WalletConnect = ({ onConnect }) => {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -35,6 +35,18 @@ const WalletConnect = ({ onConnect }) => {
     }
   };
 
+  const disconnectWallet = () => {
+    setWalletAddress('');
+    onConnect('');
+    toast({
+      title: 'Wallet Disconnected',
+      description: 'Successfully disconnected from wallet',
+      status: 'info',
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
   return (
     <VStack spacing={4} align="stretch">
       <Text fontSize="lg" textAlign="center">
@@ -42,12 +54,11 @@ const WalletConnect = ({ onConnect }) => {
       </Text>
       <Button
         colorScheme="purple"
-        onClick={connectWallet}
+        onClick={walletAddress ? disconnectWallet : connectWallet}
         isLoading={isConnecting}
-        loadingText="Connecting..."
-        disabled={!!walletAddress}
+        loadingText={walletAddress ? 'Disconnecting...' : 'Connecting...'}
       >
-        {walletAddress ? 'Connected' : 'Connect Wallet'}
+        {walletAddress ? 'Disconnect Wallet' : 'Connect Wallet'}
       </Button>
     </VStack>
   );
