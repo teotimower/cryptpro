@@ -9,23 +9,35 @@ const WalletConnect = ({ onConnect }) => {
   const connectWallet = async () => {
     setIsConnecting(true);
     try {
-      // Simulate wallet connection for now
-      const mockAddress = '0x' + Math.random().toString(16).slice(2, 42);
-      setWalletAddress(mockAddress);
-      onConnect(mockAddress);
+      // Implement Kaspa wallet connection logic here
+      const kaspaWallet = window.kaspa; // Assuming kaspa object is available in the window
+      if (kaspaWallet) {
+        const accounts = await kaspaWallet.requestAccounts();
+        const walletAddress = accounts[0];
+        setWalletAddress(walletAddress);
+        onConnect(walletAddress);
 
-      toast({
-        title: 'Wallet Connected',
-        description: `Successfully connected to wallet: ${mockAddress.slice(0, 6)}...${mockAddress.slice(-4)}`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
+        toast({
+          title: 'Wallet Connected',
+          description: `Successfully connected to Kaspa wallet: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Kaspa Wallet Not Detected',
+          description: 'Please install a Kaspa wallet extension to connect.',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      console.error('Failed to connect Kaspa wallet:', error);
       toast({
         title: 'Connection Failed',
-        description: error.message || 'Failed to connect wallet',
+        description: error.message || 'Failed to connect to Kaspa wallet',
         status: 'error',
         duration: 5000,
         isClosable: true,
