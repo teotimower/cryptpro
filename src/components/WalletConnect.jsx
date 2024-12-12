@@ -9,10 +9,10 @@ const WalletConnect = ({ onConnect }) => {
   const connectWallet = async () => {
     setIsConnecting(true);
     try {
-      // Implement Kaspa wallet connection logic here
-      const kaspaWallet = window.kaspa; // Assuming kaspa object is available in the window
-      if (kaspaWallet) {
-        const accounts = await kaspaWallet.requestAccounts();
+      // Check if Kaspa wallet is available
+      if (window.kaspa) {
+        // Request access to the wallet
+        const accounts = await window.kaspa.requestAccounts();
         const walletAddress = accounts[0];
         setWalletAddress(walletAddress);
         onConnect(walletAddress);
@@ -23,6 +23,28 @@ const WalletConnect = ({ onConnect }) => {
           status: 'success',
           duration: 5000,
           isClosable: true,
+        });
+
+        // Listen for account changes
+        window.kaspa.on('accountsChanged', (newAccounts) => {
+          if (newAccounts.length > 0) {
+            setWalletAddress(newAccounts[0]);
+            onConnect(newAccounts[0]);
+          } else {
+            setWalletAddress('');
+            onConnect('');
+          }
+        });
+
+        // Listen for network changes
+        window.kaspa.on('networkChanged', (network) => {
+          toast({
+            title: 'Network Changed',
+            description: `Connected to network: ${network}`,
+            status: 'info',
+            duration: 5000,
+            isClosable: true,
+          });
         });
       } else {
         toast({
