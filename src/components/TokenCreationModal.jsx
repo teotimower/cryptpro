@@ -10,8 +10,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  NumberInput,
-  NumberInputField,
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -26,28 +24,35 @@ const TokenCreationModal = ({ isOpen, onClose, onTokenCreate }) => {
   const [isCreating, setIsCreating] = useState(false);
   const toast = useToast();
 
-  const handleCreate = async () => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsCreating(true);
     try {
-      // Here we'll implement the KRC-20 token creation logic
-      const tokenData = {
-        ...formData,
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
-        price: 0,
-        available: formData.totalSupply,
-      };
-      
-      await onTokenCreate(tokenData);
+      // Simulate token creation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      onTokenCreate(formData);
       toast({
         title: 'Token Created',
-        description: `Successfully created ${formData.name} (${formData.symbol})`,
+        description: 'Successfully created new token',
         status: 'success',
         duration: 5000,
         isClosable: true,
       });
       onClose();
-      setFormData({ name: '', symbol: '', totalSupply: '', description: '' });
+      setFormData({
+        name: '',
+        symbol: '',
+        totalSupply: '',
+        description: '',
+      });
     } catch (error) {
       toast({
         title: 'Creation Failed',
@@ -65,58 +70,60 @@ const TokenCreationModal = ({ isOpen, onClose, onTokenCreate }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Create KRC-20 Token</ModalHeader>
+        <ModalHeader>Create New Token</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          <FormControl mb={4}>
-            <FormLabel>Token Name</FormLabel>
-            <Input
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="My Token"
-            />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Token Symbol</FormLabel>
-            <Input
-              value={formData.symbol}
-              onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
-              placeholder="MTK"
-            />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Total Supply</FormLabel>
-            <NumberInput min={0}>
-              <NumberInputField
+        <form onSubmit={handleSubmit}>
+          <ModalBody>
+            <FormControl isRequired mb={4}>
+              <FormLabel>Token Name</FormLabel>
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="My Token"
+              />
+            </FormControl>
+            <FormControl isRequired mb={4}>
+              <FormLabel>Token Symbol</FormLabel>
+              <Input
+                name="symbol"
+                value={formData.symbol}
+                onChange={handleChange}
+                placeholder="MTK"
+              />
+            </FormControl>
+            <FormControl isRequired mb={4}>
+              <FormLabel>Total Supply</FormLabel>
+              <Input
+                name="totalSupply"
                 value={formData.totalSupply}
-                onChange={(e) => setFormData({ ...formData, totalSupply: e.target.value })}
+                onChange={handleChange}
+                type="number"
                 placeholder="1000000"
               />
-            </NumberInput>
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Description</FormLabel>
-            <Input
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Token description"
-            />
-          </FormControl>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            colorScheme="purple"
-            onClick={handleCreate}
-            isLoading={isCreating}
-            loadingText="Creating..."
-          >
-            Create Token
-          </Button>
-        </ModalFooter>
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>Description</FormLabel>
+              <Input
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Describe your token"
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button mr={3} onClick={onClose}>Cancel</Button>
+            <Button
+              colorScheme="purple"
+              type="submit"
+              isLoading={isCreating}
+              loadingText="Creating..."
+            >
+              Create Token
+            </Button>
+          </ModalFooter>
+        </form>
       </ModalContent>
     </Modal>
   );

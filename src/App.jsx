@@ -1,19 +1,8 @@
 import { useState } from 'react'
-import { ChakraProvider, Container, VStack, Heading, Button, useDisclosure, extendTheme } from '@chakra-ui/react'
+import { ChakraProvider, Container, VStack, Heading, Button, useDisclosure } from '@chakra-ui/react'
 import WalletConnect from './components/WalletConnect'
 import TokenCreationModal from './components/TokenCreationModal'
 import TokenList from './components/TokenList'
-
-// Customize the Chakra UI theme
-const theme = extendTheme({
-  styles: {
-    global: {
-      body: {
-        bg: 'gray.50'
-      }
-    }
-  }
-})
 
 function App() {
   const [walletAddress, setWalletAddress] = useState('');
@@ -29,7 +18,7 @@ function App() {
   };
 
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider>
       <Container maxW="container.xl" py={8}>
         <VStack spacing={8} align="stretch">
           <Heading textAlign="center" color="purple.600">KRC-20 Token Generator</Heading>
